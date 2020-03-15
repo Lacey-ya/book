@@ -6,4 +6,13 @@
         <result column="authorCode" property="authorCode"/>
     </resultMap>
 
+    <resultMap id="NovelAuthor" type="com.example.book.entity.to.NovelAuthorTo">
+        <result column="name" property="novelName"/>
+        <result column="authorCode" property="authorCode"/>
+    </resultMap>
+
+    <select id="getNovelAuthors" resultMap="NovelAuthor">
+        SELECT a.authorCode, b.name FROM novel_author a
+         INNER JOIN novel b ON a.novelCode = b.code
+    </select>
 </mapper>
