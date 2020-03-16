@@ -8,10 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * @Author hezhan
- * @Date 2019/11/20 9:11
- */
 @Configuration
 public class OkHttpConfig {
 

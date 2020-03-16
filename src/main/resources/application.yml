@@ -40,3 +40,15 @@ mybatis-plus:
     refresh-mapper: true
     #驼峰下划线转换
     db-column-underline: false
+
+http:
+  # 设置连接超时时间，单位为毫秒
+  connectTimeout: 10000
+  # 设置读取超时时间，单位为秒
+  readTimeout: 10
+  # 设置写超时时间，单位为秒
+  writeTimeout: 10
+  # 最大空闲连接数
+  maxIdleConnections: 20
+  # 长连接超时时间，单位为分钟
+  keepAliveDuration: 5
