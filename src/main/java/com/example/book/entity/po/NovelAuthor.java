@@ -1,6 +1,7 @@
 package com.example.book.entity.po;
 
-import com.baomidou.mybatisplus.annotations.TableName;
+
+import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("novel_author")
 public class NovelAuthor {

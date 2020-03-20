@@ -1,6 +1,6 @@
 package com.example.book.mapper;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.book.entity.po.NovelAuthor;
 import com.example.book.entity.to.NovelAuthorTo;
 import org.apache.ibatis.annotations.Mapper;

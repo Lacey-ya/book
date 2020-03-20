@@ -1,8 +1,8 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc;mysql;//localhost:3306/book?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://localhost:3306/book?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: root
 
@@ -27,7 +27,7 @@ spring:
 
 ### mybatis-plus配置
 mybatis-plus:
-  mapper-locations: classpath;/mapper/*Mapper.xml
+  mapper-locations: classpath:/mapper/*Mapper.xml
   #实体扫描，多个package用（，）隔开
   type-aliases-package: com.example.book.entity.po
   #全局配置

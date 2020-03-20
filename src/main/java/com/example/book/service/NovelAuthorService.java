@@ -1,8 +1,9 @@
 package com.example.book.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.book.entity.po.NovelAuthor;
 import com.example.book.entity.to.NovelAuthorTo;
+import com.example.book.entity.vo.NovelAuthorVo;
 
 import java.util.List;
 
@@ -13,5 +14,12 @@ public interface NovelAuthorService extends IService<NovelAuthor> {
      * @return
      */
     List<NovelAuthorTo> getNovelAuthors();
+
+    /**
+     * 获取小说名字和作者名字
+     * @return
+     */
+    List<NovelAuthorVo> getNovelAuthorName();
+
 
 }
