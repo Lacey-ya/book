@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.book.entity.po.Novel;
 import com.example.book.entity.po.NovelAuthor;
+import com.example.book.entity.to.AuthorTO;
 import com.example.book.entity.to.NovelAuthorTo;
 import com.example.book.entity.to.NovelTo;
 import com.example.book.entity.vo.NovelAuthorVo;
@@ -39,30 +40,24 @@ public class NovelAuthorServiceImpl extends ServiceImpl<NovelAuthorMapper, Novel
     @Override
     public List<NovelAuthorVo> getNovelAuthorName() {
         //调用其他平台接口
-        String url="127.0.0.1:8080/api/getAuthors";  //平台接口地址
+        String url="http://127.0.0.1:9090/api/getAuthors";  //平台接口地址
         String response=restTemplateUtil.get(url,String.class,null);    //调用接口获取数据
+        List<AuthorTO> authorTOS=JSONArray.parseArray(response,AuthorTO.class);
 
         //将调用平台拿到的数据反序列化，赋给类的对象，便于操作
-        List<NovelTo> novelTos= JSONArray.parseArray(response,NovelTo.class);
-        if (CollectionUtils.isEmpty(novelTos)){
-            return new ArrayList<>();
-        }
-
         List<NovelAuthorVo> novelAuthorVos=new ArrayList<>();
-        List<Novel> novels= novelMapper.selectList(new QueryWrapper<>());
-        for (NovelTo novelTo:novelTos){
+        List<Novel> novels=novelMapper.selectList(new QueryWrapper<>());
+        for (AuthorTO authorTO:authorTOS){
             NovelAuthorVo novelAuthorVo=new NovelAuthorVo();
             for (Novel novel:novels){
-                if (novelTo.getCode().equalsIgnoreCase(novel.getCode())){
-                    novelTo.setName(novel.getName());
+                if (authorTO.getCode().equalsIgnoreCase(novel.getCode())){
+                    novelAuthorVo.setNovelName(novel.getName());
                     break;
                 }
             }
-
+            novelAuthorVo.setAuthorName(authorTO.getName());
+            novelAuthorVos.add(novelAuthorVo);
         }
-
-
-
-        return null;
+        return novelAuthorVos;
     }
 }
