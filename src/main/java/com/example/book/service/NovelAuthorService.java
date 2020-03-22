@@ -11,6 +11,7 @@ public interface NovelAuthorService extends IService<NovelAuthor> {
 
     /**
      *获取所有小说名称和作者代码
+     *
      * @return
      */
     List<NovelAuthorTo> getNovelAuthors();
