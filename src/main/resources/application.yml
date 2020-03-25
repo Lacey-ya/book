@@ -30,16 +30,13 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/*Mapper.xml
   #实体扫描，多个package用（，）隔开
   type-aliases-package: com.example.book.entity.po
+  configuration:
+    # 实体类字段与数据库表字段映射时取消下划线转换
+    map-underscore-to-camel-case: false
   #全局配置
   global-config:
-    # 主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
-    id-type: 3
-    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
-    field-strategy: 2
-    #刷新mapper
-    refresh-mapper: true
-    #驼峰下划线转换
-    db-column-underline: false
+    db-config:
+      id-type: uuid
 
 http:
   # 设置连接超时时间，单位为毫秒

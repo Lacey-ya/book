@@ -7,7 +7,7 @@ import com.example.book.entity.po.Novel;
 import com.example.book.entity.po.NovelAuthor;
 import com.example.book.entity.to.AuthorTO;
 import com.example.book.entity.to.NovelAuthorTo;
-import com.example.book.entity.to.NovelTo;
+import com.example.book.entity.vo.NovelAuthorBaseVO;
 import com.example.book.entity.vo.NovelAuthorVo;
 import com.example.book.mapper.NovelAuthorMapper;
 import com.example.book.mapper.NovelMapper;
@@ -15,7 +15,6 @@ import com.example.book.service.NovelAuthorService;
 import com.example.book.util.RestTemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +46,30 @@ public class NovelAuthorServiceImpl extends ServiceImpl<NovelAuthorMapper, Novel
         //将调用平台拿到的数据反序列化，赋给类的对象，便于操作
         List<NovelAuthorVo> novelAuthorVos=new ArrayList<>();
         List<Novel> novels=novelMapper.selectList(new QueryWrapper<>());
+        List<NovelAuthor> novelAuthors = novelAuthorMapper.selectList(new QueryWrapper<>());
+        List<NovelAuthorBaseVO> baseVOS = new ArrayList<>();
+        // 先将小说表数据和小说与作者的关联表数据整合在一起
+        // 好为下面的数据匹配做准备
+        for (Novel novel : novels){
+            NovelAuthorBaseVO baseVO = new NovelAuthorBaseVO();
+            for (NovelAuthor novelAuthor : novelAuthors){
+                if (novel.getCode().equalsIgnoreCase(novelAuthor.getNovelCode())){
+                    baseVO.setAuthorCode(novelAuthor.getAuthorCode());
+                    break;
+                }
+            }
+            baseVO.setStatus(novel.getStatus());
+            baseVO.setNovelName(novel.getName());
+            baseVOS.add(baseVO);
+        }
+        // 将上面整合在一起的数据与调接口的数据放一起匹配
+        // 并且赋值给前端的数据封装类
         for (AuthorTO authorTO:authorTOS){
             NovelAuthorVo novelAuthorVo=new NovelAuthorVo();
-            for (Novel novel:novels){
-                if (authorTO.getCode().equalsIgnoreCase(novel.getCode())){
-                    novelAuthorVo.setNovelName(novel.getName());
+            for (NovelAuthorBaseVO baseVO:baseVOS){
+                if (authorTO.getCode().equalsIgnoreCase(baseVO.getAuthorCode())){
+                    novelAuthorVo.setStatus(baseVO.getStatus() == 0 ? "连更" : "已完结");
+                    novelAuthorVo.setNovelName(baseVO.getNovelName());
                     break;
                 }
             }

@@ -1,5 +1,8 @@
 package com.example.book.entity.to;
 
+/**
+ * 获取小说名称和小说code
+ */
 public class NovelTo {
 
     private String code;

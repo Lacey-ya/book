@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 import java.io.Serializable;
 
+/**
+ * 小说实体类
+ */
 @TableName("novel")
 public class Novel extends Model<Novel> {
 
@@ -15,6 +18,15 @@ public class Novel extends Model<Novel> {
     private String id;
     private String code;
     private String name;
+    private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getId() {
         return id;

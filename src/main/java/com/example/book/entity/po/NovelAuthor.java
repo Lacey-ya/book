@@ -3,6 +3,9 @@ package com.example.book.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
+/**
+ * 小说作者关联实体类
+ */
 @TableName("novel_author")
 public class NovelAuthor {
 

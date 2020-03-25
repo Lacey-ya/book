@@ -1,5 +1,8 @@
 package com.example.book.entity.to;
 
+/**
+ * 获取作者名称和作者code
+ */
 public class AuthorTO {
     private String code;
     private String name;
