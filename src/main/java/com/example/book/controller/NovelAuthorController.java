@@ -38,7 +38,7 @@ public class NovelAuthorController {
             @ApiResponse(code = 200,message = "成功",response =String.class),
             @ApiResponse(code = 500,message = "失败",response = String.class)})
     @GetMapping("/getNovelAuthorTable")
-    public String getNovelAuthorName(){
+    public String getNovelAuthorTable(){
         List<NovelAuthorVo> novelAuthorVos=novelAuthorService.getNovelAuthorName();
         return JSON.toJSONString(novelAuthorVos);
     }
