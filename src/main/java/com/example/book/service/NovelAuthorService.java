@@ -21,6 +21,4 @@ public interface NovelAuthorService extends IService<NovelAuthor> {
      * @return
      */
     List<NovelAuthorVo> getNovelAuthorName();
-
-
 }

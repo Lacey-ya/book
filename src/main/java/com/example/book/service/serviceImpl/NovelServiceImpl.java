@@ -1,19 +1,31 @@
 package com.example.book.service.serviceImpl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.injector.methods.additional.AlwaysUpdateSomeColumnById;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.book.entity.po.Novel;
+import com.example.book.entity.po.NovelAuthor;
 import com.example.book.entity.to.AuthorTO;
+import com.example.book.entity.vo.NovelAuthorBaseVO;
+import com.example.book.entity.vo.NovelAuthorVo;
 import com.example.book.entity.vo.NovelDetailVO;
+import com.example.book.entity.vo.NovelSaveVO;
+import com.example.book.mapper.NovelAuthorMapper;
 import com.example.book.mapper.NovelMapper;
 import com.example.book.service.NovelService;
 import com.example.book.util.RestTemplateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@Transactional
 public class NovelServiceImpl extends ServiceImpl<NovelMapper, Novel> implements NovelService {
 
     @Autowired
@@ -22,6 +34,11 @@ public class NovelServiceImpl extends ServiceImpl<NovelMapper, Novel> implements
     @Autowired
     private NovelMapper novelMapper;
 
+    @Autowired
+    private NovelAuthorMapper novelAuthorMapper;
+
+    @Autowired
+    private NovelService novelService;
 
     @Override
     public NovelDetailVO getNovelListById(String id) {
@@ -44,8 +61,16 @@ public class NovelServiceImpl extends ServiceImpl<NovelMapper, Novel> implements
         //你这个拿错了，你是用小说的code去匹配作者的code，当然匹配不到，
         // 要用作者的code去匹配作者的code，
         // 首先你还需要查询出小说和作者的关联表数据，然后用那个数据去匹配
+        List<NovelAuthor> novelAuthors= novelAuthorMapper.selectList(new QueryWrapper<>());
+        NovelAuthorBaseVO novelAuthorBaseVO=new NovelAuthorBaseVO();
+        for (NovelAuthor novelAuthor:novelAuthors){
+            if (novel.getCode().equalsIgnoreCase(novelAuthor.getNovelCode())){
+                novelAuthorBaseVO.setAuthorCode(novelAuthor.getAuthorCode());
+                break;
+            }
+        }
         for (AuthorTO authorTO:authorTOS){
-            if (authorTO.getCode().equalsIgnoreCase(novel.getCode())){
+            if (authorTO.getCode().equalsIgnoreCase(novelAuthorBaseVO.getAuthorCode())){
                 novelDetailVO.setAuthorName(authorTO.getName());
                 break;
             }
@@ -53,5 +78,79 @@ public class NovelServiceImpl extends ServiceImpl<NovelMapper, Novel> implements
         return novelDetailVO;
     }
 
+    @Override
+    public boolean insertNovel(NovelSaveVO novelSaveVO) {
+        // 向小说表插入小说数据
+        Novel novel = buildNovel(novelSaveVO);
+        int result = novelMapper.insert(novel);
+        if (result < 0){
+            return false;
+        }
+        // 向小说和作者表插入数据
+        NovelAuthor novelAuthor = buildNovelAuthor(novelSaveVO);
+        result = novelAuthorMapper.insert(novelAuthor);
+        if (result < 0){
+            return false;
+        }
+        return true;
+    }
 
+    @Override
+    public boolean updateNovel(NovelSaveVO novelSaveVO) {
+        Novel novel=buildNovel(novelSaveVO);
+        boolean result = updateById(novel);
+        NovelAuthor novelAuthor=buildNovelAuthor(novelSaveVO);
+        // 先删除原有关联数据，根据小说code删除
+        int count = novelAuthorMapper.delete(new QueryWrapper<NovelAuthor>().eq("novelCode", novelAuthor.getNovelCode()));
+        if (count < 0){
+            return false;
+        }
+        count = novelAuthorMapper.insert(novelAuthor);
+        if (count < 0){
+            return false;
+        }
+        return result;
+    }
+
+    @Override
+    public boolean deleteNovel(String id) {
+
+        Novel novel = novelMapper.selectById(id);
+        int count=novelAuthorMapper.delete(new QueryWrapper<NovelAuthor>().eq("novelCode",novel.getCode()));
+        if (count<0){
+            return false;
+        }
+        count=novelMapper.deleteById(id);
+        if (count<0){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 封装保存小说表实体类
+     * @param novelSaveVO
+     * @return
+     */
+    private Novel buildNovel(NovelSaveVO novelSaveVO){
+        Novel novel = new Novel();
+        novel.setId(StringUtils.isBlank(novelSaveVO.getId()) ?
+                UUID.randomUUID().toString() : novelSaveVO.getId());
+        novel.setCode(novelSaveVO.getCode());
+        novel.setName(novelSaveVO.getName());
+        novel.setStatus(novelSaveVO.getStatus());
+        return novel;
+    }
+
+    /**
+     * 封装保存小说与作者表实体类
+     * @param novelSaveVO
+     * @return
+     */
+    private NovelAuthor buildNovelAuthor(NovelSaveVO novelSaveVO){
+        NovelAuthor novelAuthor = new NovelAuthor();
+        novelAuthor.setAuthorCode(novelSaveVO.getAuthorCode());
+        novelAuthor.setNovelCode(novelSaveVO.getCode());
+        return novelAuthor;
+    }
 }
