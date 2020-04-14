@@ -37,8 +37,6 @@ public class NovelServiceImpl extends ServiceImpl<NovelMapper, Novel> implements
     @Autowired
     private NovelAuthorMapper novelAuthorMapper;
 
-    @Autowired
-    private NovelService novelService;
 
     @Override
     public NovelDetailVO getNovelListById(String id) {
